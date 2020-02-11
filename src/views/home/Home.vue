@@ -6,40 +6,8 @@
     <home-swiper :banners="banners" class="homeSwiper"></home-swiper>
     <recommends-view :recommends="recommends"></recommends-view>
     <feature-view/>
-    <tab-controll :titles="['流行','新款','精选']" class="tab-controll"/>
-
-    <ul>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-      <li>kkk</li>
-    </ul>
+    <tab-controll :titles="['流行','新款','精选']" class="tab-controll" @itemClick="clickItem"/>
+    <good-list :goods="showGoods"/>
     
   </div>
 </template>
@@ -51,8 +19,9 @@ import FeatureView from './childComps/FeatureView'
 
 import Navbar from 'components/common/navbar/Navbar'
 import TabControll from 'components/content/tabControll/TabControll'
+import GoodList from 'components/content/goods/GoodList'
 
-import {getHomeMultidata} from 'network/home'
+import {getHomeMultidata,getHomeGoods} from 'network/home'
 
 export default {
   name: 'Home',
@@ -61,20 +30,68 @@ export default {
     recommendsView,
     FeatureView,
     Navbar,
-    TabControll
+    TabControll,
+    GoodList
   },
   data () {
     return {
       banners: [],
-      recommends: []
+      recommends: [],
+      goods: {
+        'pop': {page: 0,list: []},
+        'new': {page: 0,list: []},
+        'sell': {page: 0,list: []}
+      },
+      currentType: 'pop'
+    }
+  },
+  computed: {
+    showGoods() {
+      return this.goods[this.currentType].list
     }
   },
   created() {
     // 请求多个数据
-    getHomeMultidata().then(res => {
-      this.banners = res.data.banner.list
-      this.recommends = res.data.recommend.list
-    })
+    this.getHomeMultidata()
+    // 请求商品数据
+    this.getHomeGoods('pop')
+    this.getHomeGoods('new')
+    this.getHomeGoods('sell')
+  },
+  methods: {
+    /**
+     * 事件监听相关方法
+     */
+    clickItem(index) {
+      switch(index) {
+        case 0:
+          this.currentType = 'pop'
+          break;
+        case 1:
+          this.currentType = 'new'
+          break;
+        case 2: 
+          this.currentType = 'sell'
+          break;
+      }
+    },
+
+    /**
+     * 网络请求相关方法
+     */
+    getHomeMultidata() {
+      getHomeMultidata().then(res => {
+        this.banners = res.data.banner.list
+        this.recommends = res.data.recommend.list
+      })
+    },
+    getHomeGoods(type) {
+      let page = this.goods[type].page + 1
+      getHomeGoods(type,page).then(res => {
+        this.goods[type].list.push(...res.data.list)
+        this.goods[type].page += 1
+      })
+    }
   }
 }
 </script>
@@ -97,5 +114,6 @@ export default {
     position: sticky;
     top: 44px;
     background-color: white;
+    z-index: 10
   }
 </style>
