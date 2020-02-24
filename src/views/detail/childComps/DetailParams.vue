@@ -12,46 +12,36 @@
     </div>
     <div class="date">{{goods.date | showDate}}</div>
     <div v-for="(item,index) in goods.images" :key="index" class="imgs">
-      <img :src="item" alt="">
+      <img :src="item" alt="" @load="itemImgLoad">
     </div>
-    <h3>猜你喜欢：</h3>
-    <good-list :goods="recommend"></good-list>
   </div>
 </template>
 
 <script>
-import GoodList from 'components/content/goods/GoodList'
+  import {formatDate} from 'common/utils'
 
-import {formatDate} from 'common/utils'
-
-export default {
-  name: "DetailMain",
-  components: {
-    GoodList
-  },
-  props: {
-    goods: {
-      type: Object,
-      default() {
-        return {}
+  export default {
+    name: "DetailParams",
+    props: {
+      goods: {
+        type: Object,
+        default() {
+          return {}
+        }
       }
     },
-    recommend: {
-      type: Array,
-      default() {
-        return []
+    filters: {
+      showDate(value) {
+        const date = new Date(value * 1000);
+        return formatDate(date,"yyyy-MM-dd")
+      }
+    },
+    methods: {
+      itemImgLoad() {
+        this.$emit("itemImgLoad")
       }
     }
-  },
-  filters: {
-    showDate(value) {
-      //将时间戳转化为date对象
-      // 时间戳单位为秒，date类型为毫秒
-      let date = new Date(value * 1000)
-      return formatDate(date,"yyyy-MM-dd")
-    }
   }
-}
 </script>
 
 <style scoped>

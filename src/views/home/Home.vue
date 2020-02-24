@@ -92,7 +92,7 @@ export default {
     this.saveY = this.$refs.scroll.getScrollY()
 
     // 2.取消全局事件的监听
-    this.$bus.$off()
+    this.$bus.$off("finishLoad",this.itemImgListener)
   },
 
   methods: {
