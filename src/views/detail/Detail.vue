@@ -8,18 +8,23 @@
       <detail-params ref="params" :goods="goods" @itemImgLoad="itemImgLoad"></detail-params>
       <detail-recommend ref="recommend" :recommend="recommend"></detail-recommend>
     </scroll>
+    <detail-bottom @addCart="addCart"></detail-bottom>
+    <!-- 修饰符.native用于监听组件的原生事件 -->
+    <back-top @click.native="backClick()" v-show="isShow"/>
   </div>
 </template>
 
 <script>
 import DetailNavbar from 'views/detail/childComps/DetailNavbar'
 import DetailSwiper from 'views/detail/childComps/DetailSwiper'
+
 import Scroll from 'components/common/scroll/Scroll'
 
 import DetailParams from './childComps/DetailParams'
 import DetailRecommend from './childComps/DetailRecommend'
+import DetailBottom from './childComps/DetailBottom'
 
-import {itemListenerMixin} from 'common/mixin'
+import {itemListenerMixin,backTopMixin} from 'common/mixin'
 import {debounce} from 'common/utils'
 
 import {detail,Goods,recommend} from 'network/detail'
@@ -31,9 +36,10 @@ export default {
     DetailSwiper,
     DetailParams,
     DetailRecommend,
-    Scroll
+    Scroll,
+    DetailBottom
   },
-  mixins:[itemListenerMixin],
+  mixins:[itemListenerMixin,backTopMixin],
   data() {
     return {
       iid: null,
@@ -57,6 +63,8 @@ export default {
       // console.log(position)
       // 1.获取Y值
       const positionY = -position.y;
+      // 判断置顶符号是否相显示
+      this.isShow = (-position.y) > 500;
       // 2.position和主题中的值进行对比
       let length = this.themeTopYs.length
       for(let i=0;i < length;i++) {
@@ -65,6 +73,17 @@ export default {
           this.$refs.nav.currentIndex = this.currentIndex;
         }
       }
+    },
+    addCart() {
+      const product = {};
+      product.topic = this.goods.topic;
+      product.price = this.goods.price;
+      product.images = this.goods.images[0];
+      product.name = this.goods.name;
+      product.iid = this.goods.iid;
+      // this.$store.commit("addCount",product);
+      this.$store.dispatch("addCart",product)
+
     }
   },
   created() {
@@ -87,6 +106,7 @@ export default {
       this.themeTopYs.push(this.$refs.params.$el.offsetTop);
       this.themeTopYs.push(this.$refs.recommend.$el.offsetTop);
     },100)
+
   },
   // mounted() {
   //   const refresh = debounce(this.$refs.scroll.refresh,500)
@@ -120,7 +140,7 @@ export default {
     z-index: 10;
   }
   .content {
-    height: 100%;
+    height: 84%;
     background-color: #ffffff;
   }
 </style>

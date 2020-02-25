@@ -26,6 +26,7 @@ export class Goods {
     this.topic = summy.topic,
     this.author = extra.author,
     this.publisher = extra.publisher,
-    this.date = extra.date
+    this.date = extra.date,
+    this.iid = extra.iid
   }
 }

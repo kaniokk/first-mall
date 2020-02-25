@@ -32,11 +32,10 @@ import Navbar from 'components/common/navbar/Navbar'
 import TabControll from 'components/content/tabControll/TabControll'
 import GoodList from 'components/content/goods/GoodList'
 import Scroll from 'components/common/scroll/Scroll'
-import BackTop from 'components/content/backTop/BackTop'
 
 import {getHomeMultidata,getHomeGoods} from 'network/home'
 import {debounce} from 'common/utils'
-import {itemListenerMixin} from 'common/mixin'
+import {itemListenerMixin,backTopMixin} from 'common/mixin'
 
 export default {
   name: 'Home',
@@ -47,10 +46,9 @@ export default {
     Navbar,
     TabControll,
     GoodList,
-    Scroll,
-    BackTop
+    Scroll
   },
-  mixins:[itemListenerMixin],
+  mixins:[itemListenerMixin,backTopMixin],
   data () {
     return {
       banners: [],
@@ -61,7 +59,6 @@ export default {
         'sell': {page: 0,list: []}
       },
       currentType: 'pop',
-      isShow: false,
       tabOffsetTop: 0,
       isFixed: false,
       saveY: 0
@@ -113,9 +110,6 @@ export default {
       }
       this.$refs.tabControl1.currentIndex = index
       this.$refs.tabControl2.currentIndex = index
-    },
-    backClick() {
-      this.$refs.scroll.scrollTo(0,0)
     },
     trigger(position) {
       // 1、判断置顶符号是否相显示
