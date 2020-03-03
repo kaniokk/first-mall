@@ -11,6 +11,7 @@
     <detail-bottom @addCart="addCart"></detail-bottom>
     <!-- 修饰符.native用于监听组件的原生事件 -->
     <back-top @click.native="backClick()" v-show="isShow"/>
+    <!-- <toast :message="message" :isToastShow="isToastShow"></toast> -->
   </div>
 </template>
 
@@ -19,6 +20,7 @@ import DetailNavbar from 'views/detail/childComps/DetailNavbar'
 import DetailSwiper from 'views/detail/childComps/DetailSwiper'
 
 import Scroll from 'components/common/scroll/Scroll'
+import Toast from 'components/content/toast/Toast'
 
 import DetailParams from './childComps/DetailParams'
 import DetailRecommend from './childComps/DetailRecommend'
@@ -29,6 +31,8 @@ import {debounce} from 'common/utils'
 
 import {detail,Goods,recommend} from 'network/detail'
 
+import {mapActions} from 'vuex'
+
 export default {
   name: 'Detail',
   components: {
@@ -37,7 +41,8 @@ export default {
     DetailParams,
     DetailRecommend,
     Scroll,
-    DetailBottom
+    DetailBottom,
+    // Toast
   },
   mixins:[itemListenerMixin,backTopMixin],
   data() {
@@ -48,10 +53,15 @@ export default {
       recommend: [],
       themeTopYs: [],
       getThemeTopY: null,
-      currentIndex: 0
+      currentIndex: 0,
+      // message: '',
+      // isToastShow: false
     }
   },
   methods: {
+    ...mapActions({
+      add: 'addCart'
+    }),
     itemClick(index) {
       this.$refs.scroll.scrollTo(0,-this.themeTopYs[index],100)
     },
@@ -82,7 +92,14 @@ export default {
       product.name = this.goods.name;
       product.iid = this.goods.iid;
       // this.$store.commit("addCount",product);
-      this.$store.dispatch("addCart",product)
+      // this.$store.dispatch("addCart",product).then(res => {
+      //   console.log(res);
+      // })
+      // 注意：由于调用的actions文件中的函数名称与methods中的函数名起冲突，需要使用对象的形式改变函数名
+      // 冲突时报错RangeError: Maximum call stack size exceeded----最大堆栈超过了最大值
+      this.add(product).then(res => {
+        this.$Toast.show(res,1000)
+      })
 
     }
   },

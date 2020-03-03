@@ -10,7 +10,7 @@ export const itemListenerMixin = {
   },
   mounted() {
     // 1.图片加载完成的事件监听
-    this.refresh = debounce(this.$refs.scroll.refresh,500)
+    this.refresh = debounce(this.$refs.scroll.refresh,100)
     // 下拉加载时因为图片的加载速度导致下拉困难时使用
     // 当better-scroll计算content的容器大小时没有将图片的长度计算在内导致
     // 监听图片是否加载完成

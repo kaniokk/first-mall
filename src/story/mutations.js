@@ -3,6 +3,7 @@ export default {
     payLoad.count ++
   },
   addToCart(state,payLoad) {
+    payLoad.check = true;
     state.cartList.push(payLoad)
   }
 }
